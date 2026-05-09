@@ -1,0 +1,126 @@
+// =====================================================
+//  Nova — простой сервер на Node.js + Express
+//  Данные хранятся в data.json
+// =====================================================
+
+const express = require('express');
+const fs      = require('fs');
+const path    = require('path');
+
+const app  = express();
+const PORT = 3000;
+const DATA_FILE = path.join(__dirname, 'data.json');
+
+// ── Middleware ────────────────────────────────────────
+app.use(express.json());                        // парсим JSON из запросов
+app.use(express.static(__dirname));             // отдаём Nova.html как статику
+
+// ── Хелперы для работы с файлом ──────────────────────
+function readData() {
+  const raw = fs.readFileSync(DATA_FILE, 'utf-8');
+  return JSON.parse(raw);
+}
+
+function writeData(data) {
+  fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
+}
+
+// ── Роуты: ЗАМЕТКИ ────────────────────────────────────
+
+// Получить все заметки
+app.get('/api/notes', (req, res) => {
+  const { notes } = readData();
+  res.json(notes);
+});
+
+// Создать заметку
+app.post('/api/notes', (req, res) => {
+  const { title, body } = req.body;
+
+  if (!title) {
+    return res.status(400).json({ error: 'Title is required' });
+  }
+
+  const data = readData();
+  const colors = ['#7F77DD','#63C921','#EF9F27','#E24B4A','#1D9E75','#D4537E'];
+
+  const newNote = {
+    id:    Date.now(),
+    title,
+    body:  body || '',
+    color: colors[Math.floor(Math.random() * colors.length)],
+    date:  new Date().toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' }),
+  };
+
+  data.notes.unshift(newNote);
+  writeData(data);
+  res.status(201).json(newNote);
+});
+
+// Удалить заметку
+app.delete('/api/notes/:id', (req, res) => {
+  const id   = parseInt(req.params.id);
+  const data = readData();
+  data.notes = data.notes.filter(n => n.id !== id);
+  writeData(data);
+  res.json({ ok: true });
+});
+
+// ── Роуты: ЗАДАЧИ ─────────────────────────────────────
+
+// Получить все задачи
+app.get('/api/tasks', (req, res) => {
+  const { tasks } = readData();
+  res.json(tasks);
+});
+
+// Создать задачу
+app.post('/api/tasks', (req, res) => {
+  const { text, tag } = req.body;
+
+  if (!text) {
+    return res.status(400).json({ error: 'Text is required' });
+  }
+
+  const data = readData();
+  const newTask = {
+    id:   Date.now(),
+    text,
+    tag:  tag || 'code',
+    done: false,
+  };
+
+  data.tasks.push(newTask);
+  writeData(data);
+  res.status(201).json(newTask);
+});
+
+// Переключить задачу (done / not done)
+app.patch('/api/tasks/:id', (req, res) => {
+  const id   = parseInt(req.params.id);
+  const data = readData();
+  const task = data.tasks.find(t => t.id === id);
+
+  if (!task) {
+    return res.status(404).json({ error: 'Task not found' });
+  }
+
+  task.done = !task.done;
+  writeData(data);
+  res.json(task);
+});
+
+// Удалить задачу
+app.delete('/api/tasks/:id', (req, res) => {
+  const id   = parseInt(req.params.id);
+  const data = readData();
+  data.tasks = data.tasks.filter(t => t.id !== id);
+  writeData(data);
+  res.json({ ok: true });
+});
+
+// ── Запуск сервера ────────────────────────────────────
+app.listen(PORT, () => {
+  console.log(`✅ Nova server running at http://localhost:${PORT}`);
+  console.log(`   Open http://localhost:${PORT}/Nova.html in your browser`);
+});
