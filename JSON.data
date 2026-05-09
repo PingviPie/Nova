@@ -1,0 +1,53 @@
+{
+  "notes": [
+    {
+      "id": 1,
+      "title": "Project kickoff",
+      "body": "Setup repo, invite team members, define milestones for Q2.",
+      "color": "#7F77DD",
+      "date": "Today, 9:41 AM"
+    },
+    {
+      "id": 2,
+      "title": "Design system",
+      "body": "Consolidate color tokens, spacing scale, and component library.",
+      "color": "#63C921",
+      "date": "Today, 8:12 AM"
+    },
+    {
+      "id": 3,
+      "title": "API endpoints",
+      "body": "GET /users, POST /notes, DELETE /tasks — auth via Bearer token.",
+      "color": "#EF9F27",
+      "date": "Yesterday"
+    },
+    {
+      "id": 4,
+      "title": "Meeting notes",
+      "body": "Discussed roadmap for v4. Focus on performance and mobile.",
+      "color": "#1D9E75",
+      "date": "Yesterday"
+    },
+    {
+      "id": 5,
+      "title": "Reading list",
+      "body": "YDKJS, Clean Code, The Pragmatic Programmer, Refactoring UI.",
+      "color": "#D4537E",
+      "date": "3 days ago"
+    },
+    {
+      "id": 6,
+      "title": "Bug tracker",
+      "body": "Auth token expires too early. Repro: logout after 10 min idle.",
+      "color": "#E24B4A",
+      "date": "3 days ago"
+    }
+  ],
+  "tasks": [
+    { "id": 1, "text": "Finalize landing page design",     "tag": "design", "done": false },
+    { "id": 2, "text": "Write unit tests for auth module", "tag": "code",   "done": false },
+    { "id": 3, "text": "Review PR #47 from @mike",         "tag": "review", "done": false },
+    { "id": 4, "text": "Fix login redirect bug",           "tag": "bug",    "done": true  },
+    { "id": 5, "text": "Update README with setup guide",   "tag": "code",   "done": true  }
+  ]
+}
